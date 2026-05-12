@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>My Pencatat Duit Gweh</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f8ff;
+      color: #1f2937;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: auto;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1e88e5, #42a5f5);
+      color: white;
+      padding: 24px 20px;
+      border-radius: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 20px rgba(30, 136, 229, 0.25);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 14px;
+      opacity: 0.95;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: white;
+      padding: 16px;
+      border-radius: 18px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    .card small {
+      display: block;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    .card strong {
+      font-size: 22px;
+    }
+
+    .income strong {
+      color: #16a34a;
+    }
+
+    .expense strong {
+      color: #dc2626;
+    }
+
+    .balance strong {
+      color: #1e88e5;
+    }
+
+    .form-box {
+      background: white;
+      padding: 18px;
+      border-radius: 20px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+      margin-bottom: 18px;
+    }
+
+    .form-box h2,
+    .history h2 {
+      font-size: 18px;
+      margin-bottom: 14px;
+      color: #0f172a;
+    }
+
+    label {
+      font-size: 13px;
+      color: #475569;
+      display: block;
+      margin-bottom: 6px;
+      margin-top: 12px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #dbeafe;
+      border-radius: 14px;
+      font-size: 15px;
+      outline: none;
+      background: #f8fbff;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #1e88e5;
+      background: white;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .btn-primary {
+      width: 100%;
+      margin-top: 16px;
+      background: #1e88e5;
+      color: white;
+      padding: 14px;
+      box-shadow: 0 6px 14px rgba(30, 136, 229, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: #1565c0;
+    }
+
+    .filter {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .filter button {
+      flex: 1;
+      padding: 10px;
+      background: white;
+      color: #1e88e5;
+      border: 1px solid #bfdbfe;
+    }
+
+    .filter button.active {
+      background: #1e88e5;
+      color: white;
+    }
+
+    .history {
+      margin-bottom: 20px;
+    }
+
+    .transaction {
+      background: white;
+      padding: 14px;
+      border-radius: 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .transaction-info h3 {
+      font-size: 15px;
+      margin-bottom: 5px;
+    }
+
+    .transaction-info p {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .amount {
+      font-weight: bold;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .amount.in {
+      color: #16a34a;
+    }
+
+    .amount.out {
+      color: #dc2626;
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .actions button {
+      padding: 6px 9px;
+      font-size: 12px;
+    }
+
+    .edit-btn {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .delete-btn {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .empty {
+      text-align: center;
+      color: #64748b;
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 20px;
+    }
+
+    .number-keyboard {
+      position: fixed;
+      left: 50%;
+      bottom: 12px;
+      transform: translateX(-50%) translateY(120%);
+      width: calc(100% - 24px);
+      max-width: 480px;
+      background: white;
+      padding: 14px;
+      border-radius: 24px;
+      box-shadow: 0 -10px 32px rgba(15, 23, 42, 0.22);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 99;
+      transition: transform 0.22s ease, opacity 0.22s ease;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .number-keyboard.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .keyboard-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      color: #334155;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .keyboard-close {
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 10px 14px;
+      font-size: 13px;
+      touch-action: manipulation;
+    }
+
+    .keyboard-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .keyboard-grid button {
+      min-height: 56px;
+      padding: 14px;
+      background: #f4f8ff;
+      color: #0f172a;
+      font-size: 22px;
+      border: 1px solid #dbeafe;
+      border-radius: 18px;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .keyboard-grid button:active {
+      background: #dbeafe;
+      transform: scale(0.96);
+    }
+
+    .keyboard-grid button.key-pressed,
+    .keyboard-close.key-pressed {
+      background: #bfdbfe;
+      transform: scale(0.94);
+      transition: transform 0.08s ease, background 0.08s ease;
+    }
+
+    
+      50% {
+        transform: scale(0.92);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .key-action {
+      color: #1e88e5 !important;
+      font-size: 16px !important;
+    }
+
+    .key-delete {
+      color: #dc2626 !important;
+      font-size: 16px !important;
+    }
+
+    .key-ok {
+      font-size: 14px !important;
+      letter-spacing: 0.5px;
+    }
+
+    .keyboard-spacer {
+      height: 300px;
+      display: none;
+    }
+
+    .keyboard-spacer.show {
+      display: block;
+    }
+
+    .income-box {
+      background: linear-gradient(180deg, #f0fdf4, #ffffff);
+      border: 2px solid #bbf7d0;
+    }
+
+    .income-box h2 {
+      color: #15803d;
+    }
+
+    .income-box input {
+      background: #f7fff9;
+      border-color: #bbf7d0;
+    }
+
+    .income-box .btn-primary {
+      background: #16a34a;
+      box-shadow: 0 6px 14px rgba(22, 163, 74, 0.25);
+    }
+
+    .income-box .btn-primary:hover {
+      background: #15803d;
+    }
+
+    .expense-box {
+      background: linear-gradient(180deg, #fef2f2, #ffffff);
+      border: 2px solid #fecaca;
+    }
+
+    .expense-box h2 {
+      color: #dc2626;
+    }
+
+    .expense-box input {
+      background: #fff8f8;
+      border-color: #fecaca;
+    }
+
+    .expense-box .btn-primary {
+      background: #dc2626;
+      box-shadow: 0 6px 14px rgba(220, 38, 38, 0.25);
+    }
+
+    .expense-box .btn-primary:hover {
+      background: #b91c1c;
+    }
+
+    .transaction.income-transaction {
+      background: linear-gradient(90deg, #f0fdf4, #ffffff);
+      border-left: 6px solid #16a34a;
+    }
+
+    .transaction.expense-transaction {
+      background: linear-gradient(90deg, #fef2f2, #ffffff);
+      border-left: 6px solid #dc2626;
+    }
+
+    @media (min-width: 600px) {
+      .summary {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .card strong {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>My Pencatat Duit Gweh</h1>
+      <p>Biar duit gak hilang tanpa jejak.</p>
+    </div>
+
+    <div class="summary">
+      <div class="card income">
+        <small>Duit Masuk</small>
+        <strong id="totalIncome">Rp0</strong>
+      </div>
+      <div class="card expense">
+        <small>Duit Keluar</small>
+        <strong id="totalExpense">Rp0</strong>
+      </div>
+      <div class="card balance">
+        <small>Sisa Duit</small>
+        <strong id="balance">Rp0</strong>
+      </div>
+    </div>
+
+    <div class="form-box income-box">
+      <h2 id="formTitle">Tambah Pemasukan</h2>
+      <form id="incomeForm">
+        <label for="incomeAmount">Jumlah Duit Masuk</label>
+        <input type="text" id="incomeAmount" class="money-input" inputmode="none" placeholder="Contoh: 5000000" required readonly />
+
+        <label for="incomeNote">Keterangan</label>
+        <input type="text" id="incomeNote" placeholder="Contoh: Gaji, bonus" required />
+
+        <label for="incomeDate">Tanggal</label>
+        <input type="date" id="incomeDate" required />
+
+        <button class="btn-primary" type="submit">Simpan Pemasukan</button>
+      </form>
+    </div>
+
+    <div class="form-box expense-box">
+      <h2>Tambah Pengeluaran</h2>
+      <form id="expenseForm">
+        <label for="expenseAmount">Jumlah Duit Keluar</label>
+        <input type="text" id="expenseAmount" class="money-input" inputmode="none" placeholder="Contoh: 50000" required readonly />
+
+        <label for="expenseNote">Keterangan</label>
+        <input type="text" id="expenseNote" placeholder="Contoh: makan, bensin" required />
+
+        <label for="expenseDate">Tanggal</label>
+        <input type="date" id="expenseDate" required />
+
+        <button class="btn-primary" type="submit">Simpan Pengeluaran</button>
+      </form>
+    </div>
+
+    <div class="history">
+      <h2>Riwayat Catatan</h2>
+
+      <div class="filter">
+        <button class="active" onclick="setFilter('all', this)">Semua</button>
+        <button onclick="setFilter('income', this)">Masuk</button>
+        <button onclick="setFilter('expense', this)">Keluar</button>
+      </div>
+
+      <div id="transactionList"></div>
+    </div>
+
+    <div class="footer">
+      Catat hari ini, kendalikan duit esok hari.
+    </div>
+
+    <div id="keyboardSpacer" class="keyboard-spacer"></div>
+
+    <div id="numberKeyboard" class="number-keyboard">
+      <div class="keyboard-title">
+        <span>Keyboard Nominal</span>
+        <button class="keyboard-close" type="button" onclick="closeKeyboard()">Selesai</button>
+      </div>
+      <div class="keyboard-grid">
+        <button type="button" onclick="pressKey('1')">1</button>
+        <button type="button" onclick="pressKey('2')">2</button>
+        <button type="button" onclick="pressKey('3')">3</button>
+        <button type="button" onclick="pressKey('4')">4</button>
+        <button type="button" onclick="pressKey('5')">5</button>
+        <button type="button" onclick="pressKey('6')">6</button>
+        <button type="button" onclick="pressKey('7')">7</button>
+        <button type="button" onclick="pressKey('8')">8</button>
+        <button type="button" onclick="pressKey('9')">9</button>
+        <button class="key-action" type="button" onclick="pressKey('00')">00</button>
+        <button type="button" onclick="pressKey('0')">0</button>
+        <button class="key-delete" type="button" onclick="deleteKey()">⌫</button>
+        <button class="key-delete" type="button" onclick="clearKey()">Clear</button>
+        <button class="key-action" type="button" onclick="pressKey('000')">000</button>
+        <button class="key-action key-ok" type="button" onclick="closeKeyboard()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const incomeForm = document.getElementById('incomeForm');
+    const expenseForm = document.getElementById('expenseForm');
+
+    const incomeAmount = document.getElementById('incomeAmount');
+    const incomeNote = document.getElementById('incomeNote');
+    const incomeDate = document.getElementById('incomeDate');
+
+    const expenseAmount = document.getElementById('expenseAmount');
+    const expenseNote = document.getElementById('expenseNote');
+    const expenseDate = document.getElementById('expenseDate');
+
+    const list = document.getElementById('transactionList');
+    const totalIncomeEl = document.getElementById('totalIncome');
+    const totalExpenseEl = document.getElementById('totalExpense');
+    const balanceEl = document.getElementById('balance');
+
+    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    let currentFilter = 'all';
+    let activeMoneyInput = null;
+    const numberKeyboard = document.getElementById('numberKeyboard');
+    const keyboardSpacer = document.getElementById('keyboardSpacer');
+
+    incomeDate.valueAsDate = new Date();
+    expenseDate.valueAsDate = new Date();
+
+    function formatRupiah(number) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+      }).format(number);
+    }
+
+    function saveData() {
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+    }
+
+    function openKeyboard(input) {
+      activeMoneyInput = input;
+      numberKeyboard.classList.add('show');
+      keyboardSpacer.classList.add('show');
+    }
+
+    function closeKeyboard() {
+      numberKeyboard.classList.remove('show');
+      keyboardSpacer.classList.remove('show');
+      activeMoneyInput = null;
+    }
+
+    function formatNominal(value) {
+      const cleanValue = String(value).replace(/[^0-9]/g, '');
+      if (!cleanValue) return '';
+      return new Intl.NumberFormat('id-ID').format(Number(cleanValue));
+    }
+
+    function pressKey(value) {
+      if (!activeMoneyInput) return;
+
+      const currentValue = activeMoneyInput.value.replace(/[^0-9]/g, '');
+      const addedValue = String(value).replace(/[^0-9]/g, '');
+      const newValue = currentValue + addedValue;
+
+      activeMoneyInput.value = formatNominal(newValue);
+    }
+
+    function deleteKey() {
+      if (!activeMoneyInput) return;
+
+      const currentValue = activeMoneyInput.value.replace(/[^0-9]/g, '');
+      const newValue = currentValue.slice(0, -1);
+
+      activeMoneyInput.value = formatNominal(newValue);
+    }
+
+    function clearKey() {
+      if (!activeMoneyInput) return;
+      activeMoneyInput.value = '';
+    }
+
+    document.querySelectorAll('.money-input').forEach(input => {
+      input.setAttribute('autocomplete', 'off');
+      input.setAttribute('autocorrect', 'off');
+      input.setAttribute('autocapitalize', 'off');
+      input.setAttribute('spellcheck', 'false');
+
+      input.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        openKeyboard(this);
+      });
+
+      input.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        openKeyboard(this);
+      });
+    });
+
+    document.querySelectorAll('.keyboard-grid button, .keyboard-close').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.stopPropagation();
+
+        this.classList.add('key-pressed');
+
+        setTimeout(() => {
+          this.classList.remove('key-pressed');
+        }, 90);
+      });
+    });
+
+    document.addEventListener('pointerdown', function(e) {
+      const clickedKeyboard = e.target.closest('.number-keyboard');
+      const clickedMoneyInput = e.target.classList.contains('money-input');
+
+      if (!clickedKeyboard && !clickedMoneyInput) {
+        closeKeyboard();
+      }
+    });
+
+    function renderSummary() {
+      const income = transactions
+        .filter(item => item.type === 'income')
+        .reduce((sum, item) => sum + item.amount, 0);
+
+      const expense = transactions
+        .filter(item => item.type === 'expense')
+        .reduce((sum, item) => sum + item.amount, 0);
+
+      totalIncomeEl.textContent = formatRupiah(income);
+      totalExpenseEl.textContent = formatRupiah(expense);
+      balanceEl.textContent = formatRupiah(income - expense);
+    }
+
+    function renderTransactions() {
+      list.innerHTML = '';
+
+      const filtered = currentFilter === 'all'
+        ? transactions
+        : transactions.filter(item => item.type === currentFilter);
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty">Belum ada catatan duit.</div>';
+        return;
+      }
+
+      filtered
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .forEach(item => {
+          const div = document.createElement('div');
+          div.className = item.type === 'income'
+            ? 'transaction income-transaction'
+            : 'transaction expense-transaction';
+
+          const sign = item.type === 'income' ? '+' : '-';
+          const amountClass = item.type === 'income' ? 'in' : 'out';
+          const label = item.type === 'income' ? 'Duit Masuk' : 'Duit Keluar';
+
+          div.innerHTML = `
+            <div class="transaction-info">
+              <h3>${item.note}</h3>
+              <p>${label} • ${item.date}</p>
+              <div class="actions">
+                <button class="edit-btn" onclick="editTransaction(${item.id})">Edit</button>
+                <button class="delete-btn" onclick="deleteTransaction(${item.id})">Hapus</button>
+              </div>
+            </div>
+            <div class="amount ${amountClass}">${sign}${formatRupiah(item.amount)}</div>
+          `;
+
+          list.appendChild(div);
+        });
+    }
+
+    function refresh() {
+      renderSummary();
+      renderTransactions();
+    }
+
+    incomeForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const amount = Number(incomeAmount.value.replace(/[^0-9]/g, ''));
+      const note = incomeNote.value.trim();
+      const date = incomeDate.value;
+
+      if (!amount || amount <= 0 || !note || !date) {
+        alert('Data pemasukan belum lengkap.');
+        return;
+      }
+
+      transactions.push({
+        id: Date.now(),
+        type: 'income',
+        amount,
+        note,
+        date
+      });
+
+      saveData();
+      incomeForm.reset();
+      incomeDate.valueAsDate = new Date();
+      refresh();
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 600) {
+        numberKeyboard.style.maxWidth = '480px';
+      } else {
+        numberKeyboard.style.maxWidth = '100%';
+      }
+    });
+    });
+
+    expenseForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const amount = Number(expenseAmount.value.replace(/[^0-9]/g, ''));
+      const note = expenseNote.value.trim();
+      const date = expenseDate.value;
+
+      if (!amount || amount <= 0 || !note || !date) {
+        alert('Data pengeluaran belum lengkap.');
+        return;
+      }
+
+      transactions.push({
+        id: Date.now(),
+        type: 'expense',
+        amount,
+        note,
+        date
+      });
+
+      saveData();
+      expenseForm.reset();
+      expenseDate.valueAsDate = new Date();
+      refresh();
+    });
+
+    function editTransaction(id) {
+      const item = transactions.find(t => t.id === id);
+      if (!item) return;
+
+      if (item.type === 'income') {
+        incomeAmount.value = item.amount;
+        incomeNote.value = item.note;
+        incomeDate.value = item.date;
+      } else {
+        expenseAmount.value = item.amount;
+        expenseNote.value = item.note;
+        expenseDate.value = item.date;
+      }
+
+      transactions = transactions.filter(t => t.id !== id);
+      saveData();
+      refresh();
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteTransaction(id) {
+      const yakin = confirm('Hapus catatan ini?');
+      if (!yakin) return;
+
+      transactions = transactions.filter(item => item.id !== id);
+      saveData();
+      refresh();
+    }
+
+    function setFilter(filter, button) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter button').forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      renderTransactions();
+    }
+
+    refresh();
+  </script>
+</body>
+</html>
